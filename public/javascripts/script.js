@@ -1,5 +1,5 @@
 // Socket
-const socket = io('http://localhost:3000')
+const socket = io()
 
 // Utils
 let isReferee = false
@@ -222,8 +222,6 @@ socket.on('connect', () => {
 
 socket.on('startGame', refereeID => {
   isReferee = socket.id === refereeID
-  console.log('Client -> startGame', isReferee)
-
   startGame()
 })
 
