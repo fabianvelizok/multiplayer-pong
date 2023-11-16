@@ -1,26 +1,32 @@
 let readyPlayers = 0
 
 function listen(io) {
-    io.on('connection', (socket) => {
+    const pongNamespace = io.of('/pong')
+    let room = ''
+
+    pongNamespace.on('connection', (socket) => {
         socket.on('ready', () => {
-            console.log(`Player ready: ${socket.id}`)
+            room = `room-${Math.floor(readyPlayers / 2)}`
+            console.log(`Player ready: ${socket.id}. Room: ${room}`)
+            socket.join(room)
             readyPlayers++
 
             if (readyPlayers % 2 === 0) {
-                io.emit('startGame', socket.id)
+                pongNamespace.in(room).emit('startGame', socket.id)
             }
         })
 
         socket.on('paddleMove', ({ xPosition }) => {
-            socket.broadcast.emit('paddleMove', { xPosition })
+            socket.to(room).emit('paddleMove', { xPosition })
         })
 
         socket.on('ballMove', ballData => {
-            socket.broadcast.emit('ballMove', ballData)
+            socket.to(room).emit('ballMove', ballData)
         })
 
         socket.on('disconnect', reason => {
             console.log(`Player disconnected: ${socket.id}. Reason: ${reason}`)
+            socket.leave(room)
         })
     });
 }

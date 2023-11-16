@@ -1,5 +1,5 @@
 // Socket
-const socket = io()
+const socket = io('/pong')
 
 // Utils
 let isReferee = false
