@@ -17,6 +17,15 @@ server.listen(3000, () => {
     console.log('listening on *:3000');
 });
 
+let readyPlayers = 0
+
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    socket.on('ready', () => {
+        console.log('Player ready', socket.id)
+        readyPlayers++
+
+        if (readyPlayers === 2) {
+            io.emit('startGame', socket.id)
+        }
+    })
 });
